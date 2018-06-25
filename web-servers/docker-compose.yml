@@ -20,6 +20,7 @@ services:
     volumes:
       - ./nginx/etc/nginx:/etc/nginx:ro
       - ./nginx/var/nginx/logs:/var/nginx/logs
+      - ./nginx/html:/usr/share/nginx/html:ro
     restart: always
   tomcat:
     container_name: tomcat
