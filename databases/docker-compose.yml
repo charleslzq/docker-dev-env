@@ -1,0 +1,57 @@
+version: '3.6'
+
+networks: 
+  default:
+    driver: bridge
+    ipam: 
+      driver: default
+      config:
+        - subnet: 172.16.239.0/24
+  jetbrains:
+    external:
+      name: jetbrains-team_default
+
+services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    networks:
+      default:
+        ipv4_address: 172.16.239.10
+    ports: 
+      - "6379:6379"
+    volumes:
+      - ./redis/usr/local/etc/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./redis/data:/data
+    restart: always
+  mariadb: 
+    container_name: mariadb
+    image: mariadb:latest
+    networks:
+      default:
+        ipv4_address: 172.16.239.11
+      jetbrains:
+        ipv4_address: 172.16.238.5
+    ports: 
+      - "3306:3306"
+    volumes:
+      - ./mariadb/etc/mysql:/etc/mysql
+      - ./mariadb/var/logs:/var/logs
+      - ./mariadb/var/lib/mysql:/var/lib/mysql
+    env_file:
+      - ./mariadb/mariadb.env
+    restart: always
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    networks:
+      default:
+        ipv4_address: 172.16.239.12
+    ports: 
+      - "27017:27017"
+    volumes:
+      - ./mongo/data/db:/data/db
+      - ./mongo/etc/mongo/mongodb.conf:/etc/mongo/mongod.conf
+    command: --config /etc/mongo/mongod.conf
+    restart: always
+

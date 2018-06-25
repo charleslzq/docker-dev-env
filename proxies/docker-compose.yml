@@ -1,0 +1,36 @@
+version: '3.6'
+
+networks: 
+  default:
+    driver: bridge
+    ipam: 
+      driver: default
+      config:
+        - subnet: 172.16.235.0/24
+
+services:
+  ssr:
+    container_name: ssr-client 
+    image: charleslzq/ssr-client:latest
+    networks:
+      default:
+        ipv4_address: 172.16.235.10
+    ports: 
+      - "1080:1080"
+    volumes:
+      - ./ssr/etc/ssr/config.json:/etc/ssr/config.json:ro
+      - ./ssr/var/log:/var/log
+    restart: always
+  privoxy:
+    container_name: privoxy
+    image: charleslzq/privoxy:latest
+    networks:
+      default:
+        ipv4_address: 172.16.235.11
+    ports: 
+      - "1090:8118"
+    volumes:
+      - ./privoxy/etc/privoxy:/etc/privoxy:ro
+      - ./privoxy/var/log/privoxy:/var/log/privoxy
+    command: --no-daemon /etc/privoxy/config
+    restart: always

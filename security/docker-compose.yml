@@ -1,0 +1,28 @@
+version: '3.6'
+
+networks: 
+  default:
+    driver: bridge
+    ipam: 
+      driver: default
+      config:
+        - subnet: 172.16.240.0/24
+
+services:
+    vault:
+        container_name: vault
+        image: vault
+        networks:
+          default:
+            ipv4_address: 172.16.240.10
+        ports:
+          - "4400:8200"
+        volumes:
+          - ./vault/file:/vault/file:rw
+          - ./vault/config:/vault/config:rw
+        environment:
+          - VAULT_ADDR=http://127.0.0.1:8200
+        cap_add:
+          - IPC_LOCK
+        entrypoint: vault server -config=/vault/config/vault.json
+        restart: always

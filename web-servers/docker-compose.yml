@@ -1,0 +1,37 @@
+version: '3.6'
+
+networks: 
+  default:
+    driver: bridge
+    ipam: 
+      driver: default
+      config:
+        - subnet: 172.16.220.0/24
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    networks: 
+      default:
+        ipv4_address: 172.16.220.10
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/etc/nginx:/etc/nginx:ro
+      - ./nginx/var/nginx/logs:/var/nginx/logs
+    restart: always
+  tomcat:
+    container_name: tomcat
+    image: tomcat:latest
+    networks: 
+      default:
+        ipv4_address: 172.16.220.11
+    ports:
+      - "8080:8080"
+    volumes:
+        - ./tomcat/conf:/usr/local/tomcat/conf:ro
+        - ./tomcat/logs:/usr/local/tomcat/logs
+        - ./tomcat/temp:/usr/local/tomcat/temp
+        - ./tomcat/apps:/usr/local/tomcat/webapps
+    restart: always
